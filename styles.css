@@ -248,42 +248,6 @@ a:hover { color: var(--lien-survol); }
 .nav-principale__lien:hover { color: var(--lien); }
 .nav-principale__lien--actif { border-bottom-color: var(--accent); }
 
-/* Les deux logements, annoncés sous « Les logements » (2026-08-12, demande de Joel).
-   ⭐ TOUJOURS VISIBLES, jamais un menu déroulant : ils sont deux et ne seront jamais
-   trois, le survol n'existe pas sous le doigt, et un déroulant cacherait justement ce
-   qu'on veut montrer — qu'il y a DEUX logements et comment ils s'appellent.
-   La micro-capitale espacée n'est pas un style neuf : c'est exactement celle de la
-   signature sous « Casa Somba », deux centimètres plus haut dans la même en-tête. */
-.nav-groupe { position: relative; display: inline-flex; align-items: center; }
-
-/* Posée en absolu SOUS la rangée : elle ne décale aucun autre lien du menu, qui gardent
-   leur alignement au centre. La place qu'elle occupe est réservée plus bas. */
-.nav-sous {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  display: flex;
-  align-items: center;
-  gap: clamp(14px, 1.4vw, 20px);
-  white-space: nowrap;
-}
-.nav-sous__lien {
-  /* Le rembourrage haut/bas porte la cible à 24px de haut (WCAG 2.2 §2.5.8) sans que la
-     ligne paraisse plus épaisse à l'œil. */
-  padding: 6px 0 5px;
-  font-family: var(--police-texte);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  /* --secondaire sur --fond = 5,5:1, mesuré : au-dessus du seuil 4,5:1 du petit texte. */
-  color: var(--secondaire);
-  text-decoration: none;
-  border-bottom: 2px solid transparent;
-}
-.nav-sous__lien:hover { color: var(--texte); }
-.nav-sous__lien--actif { color: var(--texte); border-bottom-color: var(--accent); }
-
 /* Pied de page --------------------------------------------------------------- */
 
 .pied {
