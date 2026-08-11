@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 116 120" role="img" aria-label="Casa Somba">
+  <title>Casa Somba</title>
+  <!-- La maison : une seule silhouette continue, toits attaches, porte decoupee au centre.
+       Ocre facade #D3A947 (mesure sur les photos, CHARTE_VISUELLE.md paragraphe 2). -->
+  <path fill="#D3A947" fill-rule="evenodd" d="M14,96 L24,34 L19,34 L43,8 L67,34 L62,34 L63,58 L71,58 L71,48 L66,48 L83,22 L100,48 L95,48 L102,96 Z M32,62 L42,62 L42,72 L32,72 Z"/>
+  <!-- L'eau : exactement la largeur de la maison. Turquoise #2FBFD6 (mesure dans la piscine). -->
+  <rect fill="#2FBFD6" x="14" y="104" width="88" height="7"/>
+</svg>

@@ -1,0 +1,1206 @@
+/* Casa Somba — feuille de style unique (plan Lot 009 §E).
+   Seuil de repli UNIQUE, mesuré sur le rendu réel : 1030px (finding 5 de l'audit de
+   plan). Tout fonctionne sans script.js ; script.js ajoute trois conforts : repli du
+   menu téléphone, en-tête compacte au défilement, messages de formulaire à côté des
+   champs. */
+
+:root {
+  --fond: #F4F2ED;
+  --texte: #2E3328;
+  --secondaire: #5D644A;
+  --lien: #286977;
+  --lien-survol: #1F5A67;
+  --bouton-fond: #1F5A67;
+  --bouton-survol: #286977;
+  --bouton-texte: #F4F2ED;
+  --accent: #2FBFD6;
+  --ocre: #D3A947;
+  --bordure: #D9CFC0;
+  --voile-hero: rgba(30, 35, 26, 0.42);
+
+  --police-titre: 'Newsreader', serif;
+  --police-texte: 'Source Sans 3', sans-serif;
+
+  --largeur-entete: 1560px;
+  --largeur-contenu: 1240px;
+
+  /* ⭐ LES CINQ RÔLES TYPOGRAPHIQUES DU SITE — gravés ICI, jamais recopiés dans une page.
+     Ajoutés le 2026-08-10 après un finding de Codex qui explique un malaise que trois
+     relectures n'avaient pas nommé : chaque page avait fixé ses tailles dans son coin, et
+     le corps de texte valait 17-20px sur les fiches de logement, 18-21px ailleurs.
+     Personne ne l'avait décidé — c'était l'accumulation de pages construites une à une. */
+  --texte-titre-page: clamp(34px, 5vw, 62px);
+  --texte-titre-section: clamp(26px, 3.2vw, 40px);
+  --texte-accent: clamp(21px, 2.2vw, 27px);   /* une phrase courte, jamais un paragraphe */
+  --texte-corps: clamp(18px, 1.6vw, 21px);
+  --texte-legende: clamp(16px, 1.4vw, 18px);
+
+  /* ⭐ LA COLONNE DE LECTURE — une largeur PHYSIQUE, pas « 62 caractères ».
+     C'était le défaut de fond : 62 caractères de Newsreader en 27px sont bien plus larges
+     que 62 caractères de Source Sans en 21px. Trois blocs qui se suivaient obéissaient
+     donc à trois largeurs réelles. Tous les textes narratifs partagent maintenant ce
+     bord-ci, et le blanc à droite devient un parti pris au lieu d'un trou. */
+  --colonne-lecture: 42rem;
+  --marge-laterale: clamp(20px, calc(4vw - 17px), 64px);
+  --marge-laterale-contenu: clamp(20px, 5vw, 64px);
+}
+
+/* Base ------------------------------------------------------------------ */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--fond);
+}
+
+body {
+  font-family: var(--police-texte);
+  color: var(--texte);
+  min-height: 100vh;
+}
+
+/* height:auto est requis avec les attributs width/height HTML, sinon la hauteur reste figée pendant que max-width réduit la largeur — l'image s'écrase (trouvé par Joel, 2026-08-09). */
+img { max-width: 100%; height: auto; display: block; }
+
+a { color: var(--lien); }
+a:hover { color: var(--lien-survol); }
+
+.lien-evitement {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--bouton-fond);
+  color: var(--bouton-texte);
+  padding: 12px 18px;
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+  z-index: 100;
+}
+.lien-evitement:focus {
+  left: 0;
+  position: static;
+  display: inline-block;
+}
+
+.bouton {
+  display: inline-block;
+  background: var(--bouton-fond);
+  color: var(--bouton-texte);
+  text-decoration: none;
+  font-size: 17px;
+  font-weight: 600;
+  padding: 14px 26px;
+  border: none;
+  cursor: pointer;
+}
+.bouton:hover { background: var(--bouton-survol); color: var(--bouton-texte); }
+
+/* En-tête ---------------------------------------------------------------- */
+
+.en-tete {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: var(--fond);
+  border-bottom: 1px solid var(--bordure);
+  font-family: var(--police-texte);
+}
+
+.en-tete__conteneur {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(16px, 2vw, 28px);
+  max-width: var(--largeur-entete);
+  margin: 0 auto;
+  padding: clamp(14px, 1.5vw, 18px) var(--marge-laterale);
+}
+
+.en-tete__barre {
+  overflow: hidden;
+  max-height: 240px;
+  opacity: 1;
+  visibility: visible;
+  transition: max-height 180ms cubic-bezier(.4, 0, .2, 1),
+              opacity 180ms cubic-bezier(.4, 0, .2, 1),
+              visibility 0s linear 0s;
+}
+.en-tete--compacte .en-tete__barre {
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: max-height 180ms cubic-bezier(.4, 0, .2, 1),
+              opacity 180ms cubic-bezier(.4, 0, .2, 1),
+              visibility 0s linear 180ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .en-tete__barre { transition: none; }
+}
+
+.marque {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 1.2vw, 18px);
+  font-family: var(--police-titre);
+  font-weight: 500;
+  font-size: clamp(30px, 3.2vw, 42px);
+  letter-spacing: 0.01em;
+  color: var(--texte);
+  text-decoration: none;
+  margin-right: auto;
+}
+.marque:hover { color: var(--texte); }
+.marque__logo { height: clamp(40px, 4.2vw, 52px); width: auto; flex: none; }
+.marque__texte { display: flex; flex-direction: column; gap: 2px; text-align: center; }
+.marque__nom { line-height: 1; }
+.marque__tagline {
+  font-family: var(--police-texte);
+  font-weight: 600;
+  font-size: clamp(11px, 0.85vw, 13px);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--secondaire);
+}
+
+.marque--compacte {
+  display: none;
+  font-size: 17px;
+  margin-right: clamp(10px, 1.2vw, 18px);
+}
+.marque--compacte .marque__logo { height: 26px; }
+.marque--compacte .marque__nom { font-family: var(--police-titre); font-size: 17px; }
+.marque--compacte .marque__tagline { font-size: 9px; }
+.en-tete--compacte .marque--compacte { display: flex; }
+
+.langues {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 0.9vw, 12px);
+  font-size: clamp(15px, 1.15vw, 16px);
+  color: var(--secondaire);
+}
+.langues__code { cursor: default; }
+/* Une langue construite est un vrai lien : il se souligne au survol, il se voit au
+   clavier, et sa cible tactile atteint 44 px sans changer la hauteur de la barre. */
+.langues__code--lien {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.langues__code--lien:hover { color: var(--texte); text-decoration: underline; text-underline-offset: 4px; }
+/* ⚠️ --lien (5,56:1) et NON --accent (1,97:1, sous le seuil de 3:1) : cette règle REMPLACE
+   l'anneau de focus du navigateur, qui lui est bien contrasté. Sur des cibles de 13 px,
+   quelqu'un au clavier arrivait sur sa langue sans voir qu'il y était (trouvé le
+   2026-08-11). C'est la couleur qu'utilise déjà le focus des champs du formulaire. */
+.langues__code--lien:focus-visible { outline: 2px solid var(--lien); outline-offset: 3px; border-radius: 3px; }
+.langues__code--actif { color: var(--texte); font-weight: 600; }
+.langues--bureau { margin-left: auto; }
+.langues--mobile { display: none; }
+
+.en-tete__bouton--nav { display: none; }
+.en-tete--compacte .en-tete__bouton--nav { display: inline-block; }
+
+.en-tete__bouton--mobile { display: none; }
+
+.bouton-menu {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  min-width: 48px;
+  justify-content: center;
+  padding: 0 14px;
+  background: var(--fond);
+  border: 1px solid var(--secondaire);
+  color: var(--texte);
+  font-family: var(--police-texte);
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.bouton-menu__icone { display: flex; flex-direction: column; gap: 4px; }
+.bouton-menu__icone span { display: block; width: 22px; height: 2px; background: var(--texte); }
+
+/* Navigation --------------------------------------------------------------- */
+
+.nav-principale__conteneur {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px clamp(18px, 2.2vw, 30px);
+  font-size: clamp(16px, calc(1.3vw - 1px), 18px);
+}
+
+.nav-principale__lien {
+  color: var(--texte);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 2px;
+  white-space: nowrap;
+}
+.nav-principale__lien:hover { color: var(--lien); }
+.nav-principale__lien--actif { border-bottom-color: var(--accent); }
+
+/* Pied de page --------------------------------------------------------------- */
+
+.pied {
+  border-top: 1px solid var(--bordure);
+  background: var(--fond);
+  font-family: var(--police-texte);
+  color: var(--texte);
+}
+
+.pied__grille {
+  max-width: var(--largeur-contenu);
+  margin: 0 auto;
+  padding: clamp(36px, 4.5vw, 60px) var(--marge-laterale-contenu) clamp(28px, 3.5vw, 44px);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: clamp(28px, 3.5vw, 48px);
+}
+
+.pied__colonne { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+.pied__marque { font-family: var(--police-titre); font-size: clamp(24px, 2.2vw, 30px); line-height: 1.2; }
+.pied__adresse { margin: 0; font-size: 17px; line-height: 1.6; max-width: 28ch; }
+.pied__entete { font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--secondaire); }
+.pied__al { font-size: clamp(19px, 1.7vw, 22px); font-weight: 600; line-height: 1.3; }
+.pied__mention-al { font-size: 14px; color: var(--secondaire); }
+
+.pied__lien {
+  font-size: 17px;
+  color: var(--lien);
+  text-decoration: none;
+  border-bottom: 1px solid var(--bordure);
+}
+.pied__lien:hover { color: var(--lien-survol); }
+.pied__lien--fort { font-size: 18px; }
+
+.pied__legal { border-top: 1px solid var(--bordure); }
+.pied__legal-conteneur {
+  max-width: var(--largeur-contenu);
+  padding: 18px var(--marge-laterale-contenu);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  align-items: baseline;
+  font-size: 16px;
+  color: var(--secondaire);
+}
+.pied__legal-conteneur .pied__lien { color: var(--secondaire); font-size: 16px; }
+.pied__legal-conteneur .pied__lien:hover { color: var(--lien); }
+
+/* Hero ----------------------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: clamp(620px, 92vh, 940px);
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  background: var(--texte);
+}
+.hero__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 52%;
+}
+/* 🔴 UNE OMBRE EN BAS DE PHOTO, PAS UN VOILE UNIFORME — décision de Joel du 2026-08-11,
+   après mesure. Le voile plat à 0,42 laissait le H1 (« naturistes · réservé aux adultes »)
+   à 2,5:1 sur téléphone, là où la règle en demande 4,5 : la phrase qui dit ce qu'est la
+   maison était la moins lisible de la page, posée sur l'eau turquoise et la margelle
+   claire. Monter le voile uniforme aurait éteint toute la photo d'entrée.
+   ⚠️ L'OMBRE EST ANCRÉE SUR LE BLOC DE TEXTE, pas sur la hauteur de la photo — première
+   version corrigée le jour même : un dégradé en pourcentages de la photo marchait sur
+   téléphone et échouait sur ordinateur (1,50:1), parce que le texte y remonte de 41 % à
+   78 % de la hauteur. Ancrée ainsi, l'ombre suit le texte quelle que soit la largeur.
+   `--voile-hero` reste le voile général, très léger : il unifie l'image sans l'éteindre. */
+.hero__voile {
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 35, 26, 0.18);
+}
+/* 🔴 LE DÉGRADÉ EST LE FOND DE CE BLOC — pas un pseudo-élément, et c'est une CORRECTION
+   du 2026-08-11 : ma première version le posait en `::before` avec `z-index: -1`. Or
+   `.hero__texte` ne crée aucun contexte d'empilement (`z-index: auto`), donc ce -1
+   l'envoyait DERRIÈRE la photo, qui est un frère positionné. L'ombre existait dans la
+   feuille de style et n'apparaissait nulle part à l'écran — c'est Joel qui l'a vu, sur
+   une capture, après que j'aie annoncé la correction comme faite.
+   ⚠️ Et le défaut était DOUBLE : j'avais aussi éclairci le voile général de 0,42 à 0,18,
+   donc le titre était devenu MOINS lisible qu'avant mon intervention.
+   Ici, plus d'empilement à raisonner : le fond d'un élément normal se peint après la
+   photo, qui le précède dans le document. Le grand `padding-top` sert de course au
+   dégradé, pour que la transition se fasse AU-DESSUS du texte et jamais dedans. */
+/* ⚠️ PAS DE `max-width` ICI — corrigé le 2026-08-11, sur capture de Joel. Le bloc était
+   limité à 1040 px : sur un écran large, son fond s'arrêtait donc net au milieu de la
+   photo, laissant une COUPURE VERTICALE franche entre la partie assombrie et la partie
+   claire. Le bloc traverse maintenant toute la largeur ; ce sont les phrases qui gardent
+   leur propre largeur de lecture (`max-width` en `ch`, plus bas). */
+.hero__texte {
+  position: relative;
+  /* La marge haute sert de course au dégradé. Mesurée, pas devinée : à 26vh le bloc
+     commençait à 4 % du haut de la photo sur un grand écran — l'ombre montait donc
+     jusqu'au ciel et éteignait toute l'image. À 12vh il commence vers 21 %, juste
+     au-dessus du texte, et les deux tiers hauts gardent leur lumière. */
+  padding: clamp(70px, 12vh, 150px) var(--marge-laterale-contenu) clamp(36px, 6vw, 80px);
+  width: 100%;
+  background: linear-gradient(
+    to top,
+    rgba(30, 35, 26, 0.46) 0%,
+    rgba(30, 35, 26, 0.38) 55%,
+    rgba(30, 35, 26, 0.16) 82%,
+    rgba(30, 35, 26, 0) 100%
+  );
+}
+.hero__accent { width: 72px; height: 3px; background: var(--accent); margin-bottom: clamp(20px, 3vw, 30px); }
+.hero__phrase1 {
+  text-shadow: 0 2px 14px rgba(18, 22, 15, 0.72), 0 0 4px rgba(18, 22, 15, 0.55);
+  font-family: var(--police-titre);
+  font-weight: 400;
+  font-size: clamp(32px, 5.2vw, 62px);
+  line-height: 1.1;
+  margin: 0 0 clamp(16px, 2.2vw, 24px);
+  color: var(--fond);
+  max-width: 17ch;
+  text-wrap: pretty;
+}
+.hero__phrase2 {
+  text-shadow: 0 2px 14px rgba(18, 22, 15, 0.72), 0 0 4px rgba(18, 22, 15, 0.55);
+  font-family: var(--police-titre);
+  font-weight: 400;
+  font-size: clamp(21px, 2.8vw, 32px);
+  line-height: 1.32;
+  margin: 0;
+  color: var(--fond);
+  max-width: 26ch;
+  text-wrap: pretty;
+}
+
+/* Sections génériques ---------------------------------------------------------- */
+
+.section {
+  padding: clamp(48px, 7vw, 96px) var(--marge-laterale-contenu);
+  max-width: var(--largeur-contenu);
+  margin: 0 auto;
+}
+.section__accent { width: 72px; height: 3px; background: var(--accent); margin-bottom: 24px; }
+.section__titre {
+  font-family: var(--police-titre);
+  font-weight: 400;
+  font-size: var(--texte-titre-section);
+  line-height: 1.2;
+  margin: 0 0 clamp(32px, 4vw, 52px);
+}
+
+/* Bande aérienne (accueil) — alignée sur la grille de contenu, même largeur que sa
+   légende (décision Joel 2026-08-09, après essai pleine largeur : la photo entière,
+   une fois débarrassée de son recadrage, devenait un second écran d'entrée qui
+   répétait la piscine du hero). Photo entière, aucun recadrage : la hauteur suit
+   la forme réelle de l'image. */
+.bande-aerienne {
+  max-width: var(--largeur-contenu);
+  margin: 0 auto;
+  padding: 0 var(--marge-laterale-contenu);
+}
+.bande-aerienne__image {
+  width: 100%;
+}
+.bande-aerienne__legende {
+  margin: 0;
+  padding: clamp(20px, 2.5vw, 32px) 0 clamp(48px, 6vw, 80px);
+  font-family: var(--police-titre);
+  font-weight: 400;
+  font-size: clamp(19px, 1.8vw, 26px);
+  line-height: 1.4;
+  color: var(--texte);
+  text-align: center;
+  text-wrap: pretty;
+}
+
+/* Logements ---------------------------------------------------------------------- */
+
+.section--logements { max-width: 1400px; }
+
+.logements__grille {
+  display: grid;
+  /* min(340px, 100%) et non 340px : sans ça, la piste garde ses 340 px dans un contenu
+     plus étroit et la page se met à défiler latéralement. Ça frappe précisément le
+     visiteur qui zoome à 400 % pour lire (WCAG 1.4.10) — corrigé le 2026-08-11. */
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  gap: clamp(44px, 6vw, 88px);
+  align-items: start;
+}
+.logement-carte__lien {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: var(--texte);
+  text-decoration: none;
+}
+.logement-carte__lien:hover { color: var(--lien); }
+.logement-carte__image { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+.logement-carte__titre { font-family: var(--police-titre); font-weight: 400; font-size: clamp(26px, 2.9vw, 34px); margin: 0; }
+.logement-carte__accroche { font-size: clamp(17px, 1.4vw, 19px); line-height: 1.6; margin: 0; color: var(--secondaire); max-width: 34ch; text-wrap: pretty; }
+.logement-carte__tarif { font-size: clamp(18px, 1.45vw, 20px); line-height: 1.5; margin: 0; }
+.logement-carte__tarif strong { font-weight: 600; }
+
+.logement-carte__cta {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--lien);
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 2px;
+  align-self: flex-start;
+}
+.logement-carte__lien:hover .logement-carte__cta { color: var(--lien-survol); }
+
+.logements-comparaison__intro {
+  font-size: var(--texte-corps);
+  line-height: 1.6;
+  max-width: var(--colonne-lecture);
+  margin: 0 0 clamp(32px, 4vw, 52px);
+  text-wrap: pretty;
+}
+
+.logements__commun {
+  font-size: clamp(16px, 1.3vw, 18px);
+  line-height: 1.6;
+  margin: clamp(32px, 4vw, 52px) 0 0;
+  color: var(--secondaire);
+  text-wrap: pretty;
+}
+
+/* Fiche logement (Le Studio, La Chambre) — gabarit partagé ------------------------- */
+
+.fiche-logement__intro {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 2.4vw, 28px);
+  max-width: var(--colonne-lecture);
+  font-size: var(--texte-corps);
+  line-height: 1.65;
+}
+/* Le repère « ce que c'est » sous le titre de fiche (ch.7 §1) : présent et lisible,
+   mais en retrait — c'est un repère, pas l'argument de vente de la page. */
+.fiche-logement__situation {
+  /* La marge basse vaut l'écart interne du bloc d'intro qui suit : sans elle, le repère
+     collait à la première phrase et les deux se lisaient comme un seul paragraphe
+     (vu au contrôle du rendu réel, à la clôture du lot). */
+  margin: 14px 0 clamp(20px, 2.4vw, 28px);
+  max-width: var(--colonne-lecture);
+  color: var(--secondaire);
+  font-size: var(--texte-legende);
+  line-height: 1.55;
+}
+.fiche-logement__intro p { margin: 0; text-wrap: pretty; }
+.fiche-logement__surface {
+  font-family: var(--police-titre);
+  font-size: var(--texte-accent);
+  line-height: 1.4;
+}
+
+.galerie-logement {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(20px, 2.6vw, 36px);
+}
+.galerie-logement__figure { margin: 0; min-width: 0; }
+.galerie-logement__image { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+
+.fiche-logement__equipements {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px clamp(28px, 4vw, 56px);
+  font-size: var(--texte-legende);
+  line-height: 1.55;
+}
+.fiche-logement__equipements li { padding-bottom: 12px; border-bottom: 1px solid var(--bordure); }
+
+.fiche-logement__tarif { border-collapse: collapse; width: 100%; max-width: 720px; font-size: var(--texte-legende); line-height: 1.55; }
+.fiche-logement__tarif th,
+.fiche-logement__tarif td { text-align: left; padding: 14px 0; border-bottom: 1px solid var(--bordure); vertical-align: top; font-weight: 400; }
+.fiche-logement__tarif th { font-weight: 600; padding-right: 24px; white-space: nowrap; }
+
+/* Bandeau tarifs (accueil) --------------------------------------------------------- */
+
+.bandeau-tarifs { background: var(--ocre); padding: clamp(32px, 4.5vw, 52px) 0; }
+.bandeau-tarifs__liste {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0 var(--marge-laterale-contenu);
+  max-width: var(--largeur-contenu);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px clamp(28px, 4vw, 48px);
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+/* La maison et nous ------------------------------------------------------------------
+   La page alterne image et texte au lieu d'empiler des paragraphes : c'est la page qui
+   présente des GENS et un lieu, pas une offre. Les blocs viennent de la maquette validée
+   (design/maquettes/la-maison-et-nous.html). Elle bascule à 860px ; ici on garde le seuil
+   UNIQUE du site (1030px, finding 5) — les colonnes se replient donc un peu plus tôt,
+   jamais plus tard. */
+
+.section--titre-seul { padding-bottom: clamp(32px, 4vw, 52px); }
+.section--serree { padding-top: 0; }
+
+.maison__h1 {
+  font-family: var(--police-titre);
+  font-weight: 400;
+  font-size: var(--texte-titre-page);
+  line-height: 1.1;
+  margin: 0;
+  max-width: 20ch;
+  text-wrap: pretty;
+  /* L'allemand compose des mots que rien ne peut couper autrement :
+     « Datenschutzerklärung » débordait à lui seul de l'écran d'un visiteur qui zoome.
+     `lang` est posé sur <html>, donc la césure automatique tombe au bon endroit. */
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+.maison__ouverture {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(24px, 3vw, 36px);
+}
+/* 16/9 recadré vers le BAS (2026-08-10). Le rognage ne sert pas qu'à la hauteur : le haut
+   du cadre contenait la maison du voisin à gauche et sa piscine à droite. Choisi en
+   REGARDANT quatre candidats — 2:1 et 21:9 entament le toit, et sans le toit on perd la
+   maison. Ici : voisins hors champ, maison entière, tous les parasols, piscine complète,
+   haies conservées. */
+.maison__ouverture .maison__image {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: 50% 78%;
+}
+/* DEUX tailles dans tout le bloc du lieu, pas trois (Joel, 2026-08-10) : le corps de
+   texte, et UNE phrase en accent. Deux tailles de corps séparées de 2px se lisaient comme
+   une erreur, pas comme une intention. */
+.maison__lieu {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(22px, 2.6vw, 32px);
+  max-width: var(--colonne-lecture);
+}
+.maison__duo {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: clamp(28px, 4vw, 56px);
+  align-items: center;
+}
+
+.maison__image { width: 100%; display: block; min-width: 0; }
+.maison__image--large { aspect-ratio: 21 / 9; object-fit: cover; margin-bottom: clamp(24px, 3vw, 36px); }
+
+/* LES DEUX PHOTOS DU LOT 010 — À LEUR FORMAT NATIF, JAMAIS RECADRÉES.
+   ⚠️ Elles n'utilisent PAS `--large` : ce cadre-là est un bandeau 21/9 taillé pour la
+   photo de l'apatam, et il coupait le haut du premier masque. **Le recadrage est une
+   décision de composition, qui appartient à Joel** (frontière posée dans
+   preparer_images.py et au plan du lot) : tant qu'il n'a pas tranché, on montre l'image
+   entière. */
+.maison__image--porte { aspect-ratio: 3 / 2; object-fit: contain; }
+/* Les masques : trois petits objets dans un grand champ blanc — c'est le vide qui fait
+   l'image. Bornée et centrée pour rester un accent : pleine largeur, elle deviendrait
+   un second écran d'entrée (le défaut corrigé sur DJI_0130 le 2026-08-09). */
+.maison__image--masques {
+  width: min(100%, 820px);
+  margin: 0 auto;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+}
+/* Le bandeau de l'apatam reste DANS la grille de contenu — corrigé le 2026-08-10 sur le
+   rendu réel. À 1560px il débordait la grille, juste sous une photo aérienne à mi-colonne :
+   le regard en déduisait que le coin repas comptait plus que la maison entière. Même
+   largeur que le plan d'ouverture, moitié moins haut : un contraste voulu, pas un saut. */
+
+.maison__texte {
+  font-size: var(--texte-corps);
+  line-height: 1.65;
+  margin: 0;
+  max-width: var(--colonne-lecture);
+  text-wrap: pretty;
+}
+
+.maison__phrase-forte {
+  font-family: var(--police-titre);
+  font-weight: 400;
+  font-size: var(--texte-accent);
+  line-height: 1.4;
+  margin: 0;
+  max-width: var(--colonne-lecture);
+  text-wrap: pretty;
+}
+/* Même échelle d'accent que la phrase du plain-pied : la page n'a plus qu'UNE taille
+   d'emphase. À 32px elle n'était qu'à 6px du titre de section juste au-dessus — deux
+   tailles trop proches se lisent comme une erreur (le défaut que Joel a nommé sur le
+   bloc du lieu, appliqué ici aussi). Elle reste en serif : c'est la voix des hôtes. */
+.maison__phrase-hotes {
+  font-family: var(--police-titre);
+  font-weight: 400;
+  font-size: var(--texte-accent);
+  line-height: 1.45;
+  margin: 0;
+  max-width: var(--colonne-lecture);
+  text-wrap: pretty;
+}
+.maison__titre-hotes { margin-bottom: clamp(24px, 3vw, 36px); }
+/* La fin de page assume son rôle : un vrai titre de section et son trait, pas une petite
+   phrase timide au-dessus d'un bouton isolé dans du blanc (finding Codex, 2026-08-10). */
+.maison__titre-fin { margin-bottom: 0; }
+.maison__portraits {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: clamp(20px, 2.6vw, 32px);
+  margin-bottom: clamp(28px, 3.4vw, 44px);
+}
+.maison__portrait { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; min-width: 0; }
+
+/* L'histoire du nom sur fond ocre : le seul aplat de couleur du site. Elle raconte le
+   Bénin et les Tata Somba — c'est l'encart le plus personnel de toutes les pages. */
+.maison__nom { background: var(--ocre); padding: clamp(48px, 6.5vw, 88px) 0; }
+.maison__nom-conteneur {
+  max-width: var(--largeur-contenu);
+  margin: 0 auto;
+  padding: 0 var(--marge-laterale-contenu);
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: clamp(28px, 4vw, 72px);
+  align-items: start;
+}
+.maison__nom-titre {
+  font-family: var(--police-titre);
+  font-weight: 400;
+  font-size: clamp(30px, 3.8vw, 46px);
+  line-height: 1.2;
+  margin: 0;
+  max-width: 16ch;
+  text-wrap: balance;
+}
+.maison__nom-texte {
+  font-size: var(--texte-corps);
+  line-height: 1.65;
+  max-width: var(--colonne-lecture);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 1.8vw, 22px);
+}
+.maison__nom-texte p { margin: 0; text-wrap: pretty; }
+
+/* La fin de page tient ensemble : la ligne des langues et le bouton, pas deux blocs
+   orphelins séparés de blanc. */
+.maison__fin {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(20px, 2.4vw, 28px);
+}
+
+/* Le plan des deux logements ----------------------------------------------------------
+   Les formes sont tracées en SVG PAR-DESSUS la photo, jamais incrustées dedans : une seule
+   image sert les quatre langues, la géométrie s'ajuste au chiffre près, et la photo d'Amir
+   reste intacte (aucune zone régénérée). Repères relevés avec Joel — SELECTION_PHOTOS §3.18. */
+
+.plan { margin: 0; }
+/* Le calque se borne à l'IMAGE, pas à la figure : sinon il s'étire jusque sous la légende
+   et les formes glissent vers le bas (trouvé sur le rendu, pas sur le code). */
+.plan__cadre { position: relative; line-height: 0; }
+.plan__image { width: 100%; display: block; }
+
+.plan__zones {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.plan__zone {
+  fill: rgba(47, 191, 214, 0.15);
+  stroke: #7FE0F0;
+  stroke-width: 2px;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;   /* le trait ne se déforme pas avec la photo */
+}
+
+.plan__etiquette,
+.plan__terrasse-libelle {
+  font-family: var(--police-titre);
+  color: #fff;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55), 0 0 2px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.plan__etiquette {
+  position: absolute;
+  font-size: clamp(15px, 1.7vw, 22px);
+  line-height: 1;
+  /* Une pastille, pas du texte blanc posé sur la photo nue : la moitié de chaque nom
+     tombait sur la tuile ocre ou la pierre claire (mesuré à 1,26:1 au pire le
+     2026-08-11). L'ombre portée aide l'œil, mais aucun outil ne la crédite. Sur ce
+     fond, le nom tient ~11:1 où qu'il tombe. */
+  background: rgba(30, 35, 26, 0.78);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+/* La terrasse : un simple repère, jamais un second contour fermé — sinon la page devient
+   un plan d'architecte et on ne sait plus ce qui est important. */
+.plan__terrasse {
+  position: absolute;
+  width: clamp(14px, 1.4vw, 18px);
+  height: clamp(14px, 1.4vw, 18px);
+  margin: calc(clamp(14px, 1.4vw, 18px) / -2) 0 0 calc(clamp(14px, 1.4vw, 18px) / -2);
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+}
+.plan__terrasse-libelle {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  transform: translateX(-50%);
+  font-size: clamp(12px, 1.15vw, 15px);
+  font-style: italic;
+}
+
+.plan__legende {
+  margin: clamp(18px, 2vw, 26px) 0 0;
+  font-size: var(--texte-corps);
+  line-height: 1.65;
+  max-width: var(--colonne-lecture);
+  text-wrap: pretty;
+}
+
+/* Les alentours ------------------------------------------------------------------------
+   La page la plus longue et la plus illustrée du site. Elle suit la même colonne de lecture
+   que les autres — les images seules occupent la pleine largeur du contenu. */
+
+.alentours__figure { margin: 0; }
+.alentours__image--large { aspect-ratio: 16 / 9; object-fit: cover; }
+/* La photo d'ouverture garde son 4/3 : consigne explicite du ch.6 §9 (« ne pas forcer en
+   bandeau »), que le cadre 16/9 violait — un quart de la hauteur partait au recadrage. */
+.alentours__image--village { aspect-ratio: 4 / 3; object-fit: contain; }
+.alentours__diptyque {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(20px, 2.6vw, 36px);
+}
+.alentours__image--diptyque { aspect-ratio: 4 / 3; object-fit: cover; }
+
+/* LE BANDEAU DE FIN (Lot 010) : la photo est un 20:9 natif. On garde son format large —
+   la recadrer en 16/9 couperait le ciel, qui est le sujet. */
+.alentours__image--bandeau { aspect-ratio: 20 / 9; object-fit: cover; }
+
+/* LE PANORAMIQUE DE LA PLAGE, EN ENTIER (Joel, 2026-08-11 — il revient sur le diptyque).
+   Format natif exact 1600×459 : à ce rapport, `contain` et `cover` donnent le même
+   résultat, et c'est voulu — la moindre dérive de cadre se verrait, sur une image dont
+   toute la valeur est l'étendue. */
+.alentours__image--pano { aspect-ratio: 1600 / 459; object-fit: contain; }
+
+
+/* Les destinations : une liste éditoriale sobre — le lieu, le temps, la phrase. Même
+   idiome que les listes d'équipements des fiches (filet bas). */
+.alentours__destinations {
+  list-style: none;
+  margin: 0 0 clamp(22px, 2.6vw, 32px);
+  padding: 0;
+  max-width: var(--colonne-lecture);
+}
+.alentours__destination {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--bordure);
+  font-size: var(--texte-corps);
+  line-height: 1.55;
+}
+.alentours__destination-lieu { font-weight: 600; }
+.alentours__destination-temps { color: var(--secondaire); white-space: nowrap; }
+.alentours__legende {
+  margin: 10px 0 0;
+  font-size: var(--texte-legende);
+  line-height: 1.5;
+  color: var(--secondaire);
+}
+
+.alentours__region {
+  display: grid;
+  grid-template-columns: 1fr 0.55fr;
+  gap: clamp(32px, 4vw, 56px);
+  align-items: start;
+}
+.alentours__image--portrait { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; min-width: 0; }
+
+/* Les deux photos de falaises, empilées dans la colonne de droite (Joel, 2026-08-11).
+   Même largeur, même gouttière que le reste de la grille : elles se lisent comme une
+   paire, pas comme deux images qui se seraient trouvées là. */
+.alentours__region-images {
+  display: grid;
+  gap: clamp(20px, 2.6vw, 32px);
+  min-width: 0;
+}
+.alentours__image--sous-portrait { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; display: block; }
+
+/* Les paragraphes d'excursions ont rejoint la colonne de texte : ils gardent le rythme
+   des paragraphes du site, sans le grand blanc que laissait une section à part. */
+.alentours__excursion { margin-top: clamp(18px, 2.2vw, 26px); }
+
+/* Le diptyque des mouettes, borné : deux petites images ne prennent pas toute la largeur
+   d'un grand écran. Sur téléphone il se déplie comme les autres — c'est l'INTERCALAGE
+   ci-dessous qui évite l'empilement, pas un diptyque serré à 162 px par image. */
+.alentours__diptyque--serre { width: min(100%, 900px); margin-inline: auto; }
+
+.alentours__naturisme-intro { margin-bottom: clamp(28px, 3.4vw, 44px); }
+
+/* Le statut juridique se voit AVANT d'être lu : filet turquoise plein pour la plage
+   officiellement naturiste, filet ocre pour les tolérées. « Toléré » ne devient jamais
+   « autorisé » — c'est la seule page où une nuance de droit portugais est en jeu. */
+.alentours__plages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(28px, 3.5vw, 52px);
+}
+.alentours__plage { padding-top: 18px; }
+.alentours__plage--toleree { border-top: 2px dotted var(--ocre); }
+.alentours__plage--officielle { border-top: 3px solid var(--accent); }
+.alentours__plage-nom {
+  font-family: var(--police-titre);
+  font-weight: 400;
+  font-size: var(--texte-accent);
+  line-height: 1.3;
+  margin: 0;
+}
+.alentours__plage-statut {
+  margin: 4px 0 12px;
+  font-size: var(--texte-legende);
+  color: var(--secondaire);
+}
+.alentours__plage-texte { font-size: var(--texte-legende); max-width: none; margin: 0; }
+
+/* Le naturisme chez nous --------------------------------------------------------------
+   La pièce maîtresse, et la seule page qui doit convaincre sans pouvoir montrer son sujet.
+   Elle suit les mêmes cinq rôles et la même colonne de lecture que le reste du site — la
+   variété vient du rythme (texte, image, aplat, questions, cadre), jamais d'une largeur
+   ou d'une taille inventées pour l'occasion. */
+
+.naturisme__regle { margin-top: clamp(28px, 3.4vw, 44px); }
+
+/* La photo garde sa forme réelle et reste dans la colonne des IMAGES (pleine largeur du
+   contenu), comme le plan d'ouverture de « La maison et nous ». */
+.naturisme__image { max-height: 62vh; object-fit: cover; object-position: 50% 50%; }
+
+/* L'aplat ocre porte ici UNE seule phrase, pas un titre plus un texte : il n'a donc pas
+   les deux colonnes de « La maison et nous ». */
+.naturisme__concretement .maison__nom-conteneur { display: block; }
+.naturisme__concretement-texte {
+  font-family: var(--police-titre);
+  font-weight: 400;
+  font-size: var(--texte-titre-section);
+  line-height: 1.35;
+  margin: 0;
+  max-width: 30ch;
+  text-wrap: pretty;
+}
+
+.naturisme__questions {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(36px, 4.5vw, 64px);
+}
+.naturisme__question { display: flex; flex-direction: column; gap: clamp(14px, 1.6vw, 20px); }
+
+/* Le bloc des règles qui restent : un filet turquoise à gauche plutôt qu'un encadré. On
+   décrit, on n'affiche pas un règlement (doctrine du 2026-08-05). */
+.naturisme__cadre {
+  border-left: 3px solid var(--accent);
+  padding-left: clamp(20px, 2.4vw, 32px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 1.6vw, 20px);
+}
+
+/* Tarifs -------------------------------------------------------------------------------
+   « Tout est donnée, rien n'est prose » : deux cartes branchées sur la source unique,
+   des listes, et la taxe sur l'aplat ocre — à côté du prix, jamais découverte à l'arrivée. */
+
+.tarifs__cartes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: clamp(24px, 3vw, 40px);
+}
+.tarifs__carte { border-top: 3px solid var(--accent); padding-top: clamp(20px, 2.4vw, 28px); }
+.tarifs__carte-nom {
+  font-family: var(--police-titre);
+  font-weight: 400;
+  font-size: clamp(26px, 2.8vw, 34px);
+  line-height: 1.2;
+  margin: 0 0 16px;
+}
+.tarifs__carte-prix {
+  font-family: var(--police-titre);
+  font-weight: 500;
+  font-size: clamp(44px, 5.4vw, 68px);
+  line-height: 1;
+  margin: 0 0 10px;
+}
+.tarifs__carte-suffixe { font-size: var(--texte-corps); line-height: 1.5; margin: 0 0 18px; }
+.tarifs__carte-lien {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--lien);
+  text-decoration: none;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 2px;
+}
+.tarifs__carte-lien:hover { color: var(--lien-survol); }
+.tarifs__meme-prix { margin-top: clamp(32px, 4vw, 48px); }
+
+.tarifs__compris,
+.tarifs__conditions { list-style: none; margin: 0; padding: 0; }
+.tarifs__compris {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px clamp(28px, 4vw, 48px);
+  font-size: var(--texte-corps);
+  line-height: 1.5;
+}
+.tarifs__compris li { border-top: 1px solid var(--bordure); padding-top: 12px; }
+.tarifs__conditions { max-width: 74ch; font-size: var(--texte-corps); line-height: 1.6; }
+.tarifs__conditions li { border-top: 1px solid var(--bordure); padding: 14px 0; text-wrap: pretty; }
+.tarifs__conditions li:last-child { border-bottom: 1px solid var(--bordure); }
+
+.tarifs__en-plus { display: block; }
+.tarifs__en-plus-blocs {
+  display: grid;
+  /* Même correction de débordement que .logements__grille (2026-08-11). */
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: clamp(28px, 3.5vw, 56px);
+  align-items: start;
+}
+.tarifs__en-plus-fort {
+  font-family: var(--police-titre);
+  font-weight: 500;
+  font-size: clamp(24px, 2.9vw, 36px);
+  line-height: 1.2;
+  margin: 0 0 12px;
+  text-wrap: pretty;
+}
+
+/* Formulaire ---------------------------------------------------------------------------
+   Le comportement vient du ch.7. Validation native ; les messages dynamiques et l'envoi
+   réel arrivent avec l'hébergement (Lots 010/011). */
+
+.formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(22px, 2.4vw, 28px);
+  max-width: 600px;
+}
+.champ { display: flex; flex-direction: column; gap: 8px; border: 0; margin: 0; padding: 0; }
+.champ__label { font-size: 17px; font-weight: 600; }
+.champ__label { padding: 0; }
+.champ__mention { font-weight: 400; color: var(--secondaire); }
+.champ__saisie {
+  font-family: var(--police-texte);
+  font-size: 17px;
+  color: var(--texte);
+  background: var(--fond);
+  border: 1px solid var(--secondaire);
+  padding: 12px 14px;
+  width: 100%;
+}
+.champ__saisie:focus-visible { outline: 2px solid var(--lien); outline-offset: 1px; }
+.champ__saisie--court { max-width: 140px; }
+.champ__saisie--long { line-height: 1.6; resize: vertical; }
+.champ--choix { gap: 12px; }
+.champ__choix {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 34px;
+  font-size: 17px;
+}
+.champ__choix input { width: 18px; height: 18px; accent-color: var(--bouton-fond); }
+.formulaire__pied { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+.formulaire__confidentialite { font-size: var(--texte-legende); line-height: 1.55; margin: 0; color: var(--secondaire); }
+
+/* Pages légales ------------------------------------------------------------------------ */
+
+.legal__identite { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.legal__nom { font-family: var(--police-titre); font-size: clamp(24px, 2.2vw, 30px); line-height: 1.2; margin: 0; }
+.legal__lien { font-size: var(--texte-corps); color: var(--lien); text-decoration: none; border-bottom: 1px solid var(--bordure); }
+.legal__lien:hover { color: var(--lien-survol); }
+.legal__al {
+  font-family: var(--police-titre);
+  font-weight: 500;
+  font-size: clamp(26px, 3.2vw, 40px);
+  line-height: 1.25;
+  margin: 0;
+}
+.legal__sections { display: flex; flex-direction: column; gap: clamp(24px, 3vw, 36px); max-width: var(--colonne-lecture); }
+.legal__section { border-top: 1px solid var(--bordure); padding-top: 18px; }
+.legal__section-titre {
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: var(--secondaire);
+}
+
+/* Appel à l'action ------------------------------------------------------------------ */
+
+.cta__bouton { margin-top: 0; }
+
+/* Repli téléphone — seuil UNIQUE 1030px (finding 5) ---------------------------------- */
+
+@media (max-width: 1030px) {
+  .langues--bureau { display: none; }
+  .langues--mobile { display: flex; padding-top: 6px; }
+
+  .en-tete__bouton--barre { display: inline-flex; }
+  .bouton-menu { display: inline-flex; }
+
+  /* La décision « 44 × 44 px » du ch.13 §6 bis, appliquée dans la maquette validée et
+     oubliée ici : les étiquettes des trois boutons radio et le bloc de marque. */
+  .champ__choix { min-height: 44px; }
+  .marque { min-height: 44px; }
+
+  .nav-principale__conteneur { flex-direction: column; align-items: flex-start; gap: 4px; padding-top: 6px; padding-bottom: 18px; }
+  .nav-principale__lien { display: flex; align-items: center; min-height: 44px; }
+  .nav-principale .marque--compacte { display: none !important; }
+
+  /* 🔴 LE REPLI DU MENU EST EN CSS PUR DEPUIS LE 2026-08-11, et ce n'était pas un
+     détail de style. Cette règle attendait une classe posée par le JavaScript : la
+     page s'affichait donc menu DÉROULÉ (en-tête de 515 px), puis se repliait à
+     l'arrivée du script (145 px) — tout le contenu sautait sous le doigt du visiteur.
+     Mesuré : 0,375 de décalage à lui seul, pour un seuil de 0,1.
+     Or la largeur de bascule est DÉJÀ connue du CSS : c'est cette media query. La
+     classe ne servait à rien, sauf à faire attendre l'affichage.
+     Le repli sans JavaScript est rattrapé par le <noscript> de base.html. */
+  #navigation-principale[data-ouvert="false"] { display: none; }
+
+  .en-tete__bouton--mobile { display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; margin-top: 4px; }
+  .en-tete__bouton--nav { display: none !important; }
+
+  .pied__lien { display: flex; align-items: center; min-height: 44px; }
+
+  /* La maison et nous : les deux blocs image + texte se replient en une colonne, et le
+     bandeau de l'apatam quitte le 21/9 — trop écrasé sur un téléphone. */
+  .maison__duo { grid-template-columns: 1fr; }
+  .maison__nom-conteneur { grid-template-columns: 1fr; }
+  .alentours__region { grid-template-columns: 1fr; }
+  .alentours__diptyque { grid-template-columns: 1fr; }
+
+  /* ⭐ INTERCALER PHOTOS ET PARAGRAPHES SUR TÉLÉPHONE — idée de Joel, 2026-08-11, et
+     elle est meilleure que la mienne. En repliant la grille, les deux colonnes se
+     suivaient : tout le texte, PUIS toutes les photos. On avait donc trois images
+     d'affilée entre deux paragraphes. Ma parade (garder le diptyque des mouettes à deux
+     colonnes) tombait à 162 px par image — Joel : « ça me semble un peu serré », et la
+     mesure lui donne raison.
+     Ici on ne serre rien : `display: contents` fait disparaître les deux conteneurs de
+     colonne, leurs enfants deviennent les cases de la MÊME colonne, et `order` les
+     entrelace. Résultat lu de haut en bas : titre · liste · PHOTO · phrase · PHOTO ·
+     excursions. Aucune image ne perd un pixel, et plus jamais deux photos collées.
+     ⚠️ Les conteneurs sont des `div` sans rôle : les faire disparaître de l'arbre
+     n'enlève aucune information à un lecteur d'écran. */
+  .alentours__region-texte,
+  .alentours__region-images { display: contents; }
+
+  /* ⚠️ REPLI D'ABORD — la valeur par défaut de `order` est 0, donc AVANT `order: 1`.
+     Sans cette ligne, le jour où un paragraphe est ajouté sans classe d'ordre, il
+     remonterait AU-DESSUS du titre qui l'introduit : le voyant lirait une phrase
+     orpheline en tête de bloc, le lecteur d'écran l'entendrait à sa place logique — et
+     là, l'écart entre l'ordre lu et l'ordre vu deviendrait un vrai défaut (WCAG 1.3.2).
+     Tout enfant non classé tombe donc À LA FIN, jamais au début.
+     *(Finding [DURCISSEMENT] de la lentille accessibilité, audit de fin de Lot 010 :
+     il protège le mécanisme contre la PROCHAINE modification, pas contre l'état actuel.)* */
+  .alentours__region-texte > *,
+  .alentours__region-images > * { order: 7; }
+
+  .alentours__ordre-titre  { order: 1; }
+  .alentours__destinations { order: 2; }
+  .alentours__ordre-photo1 { order: 3; }
+  .alentours__ordre-suite  { order: 4; }
+  .alentours__ordre-photo2 { order: 5; }
+  .alentours__excursion    { order: 6; }
+  .maison__nom-titre { max-width: none; }
+  .maison__image--large { aspect-ratio: 4 / 3; }
+}
+
+/* ── Bloc carte, repères de la page « Nous écrire », supplément de ménage ────────────
+   Ajoutés le 2026-08-11 après les trois passes internes (carte : décision du 2026-08-08
+   jamais exécutée ; les deux autres : passe UX). */
+.carte { max-width: 1400px; margin: 0 auto; }
+.carte__lien { display: block; text-decoration: none; }
+.carte__image { width: 100%; height: auto; display: block; border: 1px solid var(--bordure); }
+.carte__itineraire { margin: 12px 0 0; font-size: var(--texte-corps); line-height: 1.6; }
+.carte__itineraire a { display: inline-flex; align-items: center; min-height: 44px; }
+.carte__credit { margin: 8px 0 0; font-size: var(--texte-legende); line-height: 1.5; color: var(--secondaire); }
+
+.demande__reperes {
+  margin: 18px 0 0;
+  max-width: var(--colonne-lecture);
+  font-size: var(--texte-corps);
+  line-height: 1.65;
+  color: var(--secondaire);
+}
+/* L'avertissement de l'aperçu (mode « apercu » uniquement, page de demande). Il est
+   PLUS visible que l'adresse de secours ci-dessous, et c'est voulu : il doit être lu
+   AVANT qu'on remplisse dix champs, pas après. Il disparaît du site publié — aucune
+   règle ci-dessous ne s'applique alors à quoi que ce soit. */
+.avis-apercu {
+  margin: 0 0 26px;
+  padding: 16px 18px;
+  background: rgba(176, 74, 46, 0.10);
+  border-left: 4px solid #b04a2e;
+  font-size: var(--texte-corps);
+  line-height: 1.6;
+  font-weight: 600;
+}
+/* L'adresse de secours n'est PAS discrète : c'est le seul chemin qui marche tant que
+   l'envoi n'est pas branché (Lot 011), et le filet du jour où il échouera. */
+.demande__secours {
+  margin: 0;
+  padding: 16px 18px;
+  background: rgba(211, 169, 71, 0.10);
+  border-left: 3px solid var(--accent);
+  font-size: var(--texte-corps);
+  line-height: 1.6;
+}
+/* Le supplément suit le prix sans le concurrencer : il informe, il n'alarme pas. */
+.logement-carte__supplement {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--police-corps);
+  font-weight: 400;
+  font-size: var(--texte-legende);
+  line-height: 1.4;
+  color: var(--secondaire);
+}
+
+/* LA SUITE DE LECTURE (2026-08-11) — décision de Joel. Discret, sous le bouton : il
+   PROPOSE, il ne détourne pas de l'action principale.
+   ⚠️ Volontairement UN seul lien par page, jamais un bloc. Joel a écarté les 52 liens
+   que le cahier des charges listait : « ça rend le site plus premium », et il a raison —
+   un mur de « Voir aussi » fait basculer une maison d'hôtes vers l'allure d'un annuaire.
+   Ce qui restait vrai, c'est qu'un lecteur arrivé au bout d'une page longue n'avait plus
+   qu'une sortie : écrire. Trois pages reçoivent donc leur suite naturelle. */
+.voir-aussi {
+  margin: 22px 0 0;
+  font-size: var(--texte-corps);
+  line-height: 1.6;
+}
+.voir-aussi a { display: inline-flex; align-items: center; min-height: 44px; }

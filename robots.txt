@@ -1,0 +1,4 @@
+# Aperçu privé du futur site — NE PAS RÉFÉRENCER.
+# Le site public est ailleurs ; ceci est une copie de travail.
+User-agent: *
+Disallow: /
