@@ -9,4 +9,5 @@ préparation, déposée telle quelle pour être regardée sur un téléphone ou 
 - Le formulaire de contact **n'envoie rien** — la page le dit à l'écran.
 - Le contenu peut être faux, incomplet ou changer sans préavis.
 
-Les sources, elles, vivent dans un dépôt privé.
+Les sources, elles, vivent dans un dépôt privé. Le contenu de ce dépôt est **regénéré et
+remplacé** à chaque mise à jour : n'y modifier aucun fichier à la main.
