@@ -119,26 +119,66 @@ a:hover { color: var(--lien-survol); }
   padding: clamp(14px, 1.5vw, 18px) var(--marge-laterale);
 }
 
-.en-tete__barre {
-  overflow: hidden;
-  max-height: 240px;
-  opacity: 1;
-  visibility: visible;
-  transition: max-height 180ms cubic-bezier(.4, 0, .2, 1),
-              opacity 180ms cubic-bezier(.4, 0, .2, 1),
-              visibility 0s linear 0s;
+/* ⭐ AU DÉFILEMENT, TOUT L'EN-TÊTE TIENT SUR UNE SEULE LIGNE — ET LE MENU NE BOUGE PAS.
+   (Idée de Joel, 2026-08-12, capture d'écran à l'appui.)
+
+   L'histoire de ce bout de code en trois temps, pour qu'on ne refasse pas le chemin :
+   1) À l'origine, le bandeau du haut se refermait et une marque compacte venait se
+      glisser À GAUCHE du menu : « Les logements » sautait de 57px à 320px dès qu'on
+      descendait. Un repère qui glisse sous l'œil fait bricolé.
+   2) J'ai essayé de faire MAIGRIR le bandeau sur place. Le menu ne bougeait plus, mais
+      on ne récupérait que 4px de hauteur : c'est le bouton « Nous écrire » qui tenait
+      la hauteur du bandeau. Joel : « pour le moment c'est insuffisant ». Il avait raison.
+   3) Sa solution, celle-ci : le bouton sort du bandeau (il faisait doublon), le bandeau
+      se referme complètement, et le logo REPARAÎT À DROITE dans l'espace resté libre
+      entre la fin du menu et le sélecteur de langue. Le menu monte sans se décaler.
+
+   C'est la seule des trois qui garde les DEUX choses à la fois : le menu aligné sous le
+   logo comme sur la page d'accueil, ET un menu qui ne bouge jamais latéralement.
+   📏 Espace libre mesuré avant de le faire : 390px en français sur 13 pouces, 333px en
+   allemand, 154px dans le pire cas (allemand à 1040px). Un logo de 30px tient partout. */
+/* ⚠️ LE BANDEAU SE FERME D'UN COUP, SANS ANIMATION — et c'est un choix, pas un oubli.
+   Il se repliait avant par une hauteur animée (`max-height` de 240px à 0). Mesuré le
+   2026-08-12 sur le rendu réel : ce repli ne se déclenchait qu'UNE FOIS SUR DEUX — la
+   valeur restait bloquée à son point de départ, exactement comme la hauteur du logo la
+   veille. Un en-tête qui se replie une fois sur deux est pire qu'un en-tête qui ne
+   s'anime pas. `display: none` ne peut pas rater : il n'y a plus de valeur à interpoler.
+   ⛔ Ne pas « rajouter une transition pour faire plus doux » sans la mesurer d'abord :
+   c'est le troisième piège d'animation de ce fichier en deux jours. */
+.en-tete--compacte .en-tete__barre { display: none; }
+
+/* Le logo voyageur. `margin-left: auto` le pousse dans l'espace libre ; le sélecteur de
+   langue, qui portait déjà le même retrait automatique, se range juste après lui.
+   ⚠️ Sa taille est écrite en dur, JAMAIS en `clamp()` : mesuré le 2026-08-12, une hauteur
+   animée depuis un `clamp()` reste bloquée à son point de départ — à l'écran, il ne se
+   passait rien du tout. */
+.marque-mini { display: none; margin-left: auto; gap: 12px; text-decoration: none; color: var(--texte); }
+.en-tete--compacte .marque-mini { display: inline-flex; align-items: center; }
+.marque-mini img { height: 30px; width: auto; display: block; flex: none; }
+
+/* ⭐ LE NOM « Casa Somba » REVIENT À CÔTÉ DU LOGO — mais SEULEMENT s'il y a la place
+   (Joel, 2026-08-12 : « je pense qu'on a même la place de garder le texte »). Il avait
+   raison sur son écran, et la mesure dit où ça s'arrête : l'espace libre vaut 390px en
+   français sur 13 pouces, mais 153px en allemand sur le plus petit écran d'ordinateur —
+   et logo + nom en réclament 144. Le nom y frôlerait « Preise » d'un côté et « fr » de
+   l'autre. Au-dessus de 1200px, l'allemand garde plus de 120px de respiration : c'est là
+   qu'on ouvre. En dessous, le symbole seul — il reste parfaitement lisible.
+   ⛔ La signature « CARVOEIRO · ALGARVE » ne revient PAS : c'est une phrase de première
+   rencontre, la répéter à chaque défilement en ferait du bruit (décision de Joel). */
+.marque-mini__nom {
+  display: none;
+  font-family: var(--police-titre);
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
 }
-.en-tete--compacte .en-tete__barre {
-  max-height: 0;
-  opacity: 0;
-  visibility: hidden;
-  transition: max-height 180ms cubic-bezier(.4, 0, .2, 1),
-              opacity 180ms cubic-bezier(.4, 0, .2, 1),
-              visibility 0s linear 180ms;
+@media (min-width: 1200px) {
+  .en-tete--compacte .marque-mini__nom { display: inline; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .en-tete__barre { transition: none; }
-}
+
+/* (Plus rien à neutraliser ici pour l'en-tête : il ne s'anime plus du tout.) */
 
 .marque {
   display: flex;
@@ -166,15 +206,10 @@ a:hover { color: var(--lien-survol); }
   color: var(--secondaire);
 }
 
-.marque--compacte {
-  display: none;
-  font-size: 17px;
-  margin-right: clamp(10px, 1.2vw, 18px);
-}
-.marque--compacte .marque__logo { height: 26px; }
-.marque--compacte .marque__nom { font-family: var(--police-titre); font-size: 17px; }
-.marque--compacte .marque__tagline { font-size: 9px; }
-.en-tete--compacte .marque--compacte { display: flex; }
+/* ⛔ `.marque--compacte` a été SUPPRIMÉE le 2026-08-12, feuille de style ET gabarit :
+   c'était elle qui poussait le menu vers la droite au défilement. Le logo du bandeau du
+   haut fait désormais le travail en maigrissant sur place — il n'y a plus deux marques,
+   il n'y en a qu'une, et elle ne bouge pas de colonne. */
 
 .langues {
   display: flex;
@@ -204,8 +239,9 @@ a:hover { color: var(--lien-survol); }
 .langues--bureau { margin-left: auto; }
 .langues--mobile { display: none; }
 
-.en-tete__bouton--nav { display: none; }
-.en-tete--compacte .en-tete__bouton--nav { display: inline-block; }
+/* ⛔ `.en-tete__bouton--nav` a suivi `.marque--compacte` : il n'existait que pour rendre
+   « Nous écrire » au moment où le bandeau du haut disparaissait. Le bandeau reste, son
+   bouton aussi — le doublon n'a plus d'objet. */
 
 .en-tete__bouton--mobile { display: none; }
 
@@ -247,6 +283,57 @@ a:hover { color: var(--lien-survol); }
 }
 .nav-principale__lien:hover { color: var(--lien); }
 .nav-principale__lien--actif { border-bottom-color: var(--accent); }
+
+/* Les deux logements, annoncés sous « Les logements » (2026-08-12, demande de Joel).
+   ⭐ TOUJOURS VISIBLES, jamais un menu déroulant : ils sont deux et ne seront jamais
+   trois, le survol n'existe pas sous le doigt, et un déroulant cacherait justement ce
+   qu'on veut montrer — qu'il y a DEUX logements et comment ils s'appellent.
+   La micro-capitale espacée n'est pas un style neuf : c'est exactement celle de la
+   signature sous « Casa Somba », deux centimètres plus haut dans la même en-tête.
+   🔴 ET SURTOUT : ILS SONT SUR LA MÊME LIGNE QUE « Les logements », PAS EMPILÉS SOUS LUI
+   (Joel, 2026-08-12 : « le risque c'est que les gens comprennent pas qu'ils peuvent aussi
+   cliquer sur Les logements »). Un lien posé au-dessus de deux petits se lit comme un
+   TITRE DE RUBRIQUE : les gens ont appris qu'une entrée de menu qui a des sous-entrées ne
+   se clique pas. Sur une seule ligne, les trois partagent la même ligne de base — trois
+   liens de même nature, dont deux subordonnés. Rien ne ressemble à un intitulé.
+   Bénéfice second : zéro pixel de hauteur ajouté à une barre qui reste collée en haut. */
+.nav-groupe { display: inline-flex; align-items: baseline; gap: clamp(10px, 1vw, 14px); }
+
+.nav-sous {
+  display: inline-flex;
+  align-items: baseline;
+  gap: clamp(10px, 1vw, 14px);
+  white-space: nowrap;
+}
+/* Le trait fin dit « ce qui suit dépend de ce qui précède », là où l'empilement le disait
+   en créant un faux titre. Décoratif : jamais lu à voix haute. */
+.nav-sous::before {
+  content: "";
+  align-self: center;
+  width: 1px;
+  height: 14px;
+  background: var(--bordure);
+}
+.nav-sous__lien {
+  /* Le rembourrage haut/bas porte la cible à 24px de haut (WCAG 2.2 §2.5.8) sans que la
+     ligne paraisse plus épaisse à l'œil. */
+  padding: 6px 0 5px;
+  font-family: var(--police-texte);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  /* --secondaire sur --fond = 5,5:1, mesuré : au-dessus du seuil 4,5:1 du petit texte. */
+  color: var(--secondaire);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+.nav-sous__lien:hover { color: var(--texte); }
+.nav-sous__lien--actif { color: var(--texte); border-bottom-color: var(--accent); }
+
+/* ⛔ PLUS AUCUNE PLACE À RÉSERVER : les deux logements tiennent sur la ligne du menu, donc
+   la barre collée en haut retrouve exactement sa hauteur d'avant. Le retrait de 26px qui
+   vivait ici a été supprimé le 2026-08-12 avec l'empilement qui l'exigeait. */
 
 /* Pied de page --------------------------------------------------------------- */
 
@@ -1070,8 +1157,16 @@ a:hover { color: var(--lien-survol); }
   .langues--bureau { display: none; }
   .langues--mobile { display: flex; padding-top: 6px; }
 
-  .en-tete__bouton--barre { display: inline-flex; }
   .bouton-menu { display: inline-flex; }
+
+  /* 🛡️ SOUS LE DOIGT, LE BANDEAU DU HAUT RESTE OUVERT, QUOI QU'IL ARRIVE. Le mode compact
+     est réservé à l'ordinateur, mais sa classe peut RESTER posée si on passe d'un écran
+     large à un écran étroit sans recharger (fenêtre réduite, tablette tournée) : le
+     bandeau se refermerait alors sur téléphone, emportant le bouton « Menu » avec lui —
+     et il n'y aurait plus aucun moyen de naviguer. Défaut déjà présent avant le
+     2026-08-12 ; il est fermé ici pendant qu'on y est. */
+  .en-tete--compacte .en-tete__barre { display: block; }
+  .marque-mini { display: none !important; }
 
   /* La décision « 44 × 44 px » du ch.13 §6 bis, appliquée dans la maquette validée et
      oubliée ici : les étiquettes des trois boutons radio et le bloc de marque. */
@@ -1080,7 +1175,19 @@ a:hover { color: var(--lien-survol); }
 
   .nav-principale__conteneur { flex-direction: column; align-items: flex-start; gap: 4px; padding-top: 6px; padding-bottom: 18px; }
   .nav-principale__lien { display: flex; align-items: center; min-height: 44px; }
-  .nav-principale .marque--compacte { display: none !important; }
+
+  /* Sous le doigt, le menu est DÉJÀ une liste verticale : les deux logements s'y glissent
+     en retrait, dans le flux — aucune place à réserver, et chaque ligne garde ses 44px de
+     cible. C'est ici que l'idée rend le plus : le menu replié est justement l'endroit où
+     l'on ne savait pas que ces deux pages existaient. */
+  .nav-groupe { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
+  .nav-sous { flex-direction: column; align-items: flex-start; gap: 0; padding-left: 20px; }
+  /* Le trait fin ne vaut que sur une ligne : dans une liste verticale, c'est le retrait
+     qui dit la subordination. Ici l'empilement ne trompe personne — le menu du téléphone
+     EST une liste, et « Les logements » y garde sa propre ligne cliquable de 44px. */
+  .nav-sous::before { display: none; }
+  .nav-sous__lien { display: flex; align-items: center; min-height: 44px; padding: 0; border-bottom: none; }
+  .nav-sous__lien--actif { border-bottom: none; color: var(--texte); text-decoration: underline; text-underline-offset: 5px; text-decoration-color: var(--accent); text-decoration-thickness: 2px; }
 
   /* 🔴 LE REPLI DU MENU EST EN CSS PUR DEPUIS LE 2026-08-11, et ce n'était pas un
      détail de style. Cette règle attendait une classe posée par le JavaScript : la
@@ -1093,7 +1200,6 @@ a:hover { color: var(--lien-survol); }
   #navigation-principale[data-ouvert="false"] { display: none; }
 
   .en-tete__bouton--mobile { display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; margin-top: 4px; }
-  .en-tete__bouton--nav { display: none !important; }
 
   .pied__lien { display: flex; align-items: center; min-height: 44px; }
 
