@@ -521,7 +521,11 @@ a:hover { color: var(--lien-survol); }
 
 /* Logements ---------------------------------------------------------------------- */
 
-.section--logements { max-width: 1400px; }
+/* ESSAI C — UN SEUL CADRE, 1240px PARTOUT. L'exception `max-width: 1400px` qui vivait ici
+   est retirée : c'était le seul endroit du site qui s'écartait de la constante, et elle
+   décalait le titre de la page « Les logements » par rapport à toutes les autres.
+   Vérifié avant de la retirer : la grille des deux cartes n'en a pas besoin — à 1240px
+   elle dispose de 1112px, très au-dessus de ses 340px minimum par carte. */
 
 .logements__grille {
   display: grid;
@@ -651,7 +655,23 @@ a:hover { color: var(--lien-survol); }
 .section--titre-seul { padding-bottom: clamp(32px, 4vw, 52px); }
 .section--serree { padding-top: 0; }
 
-.maison__h1 {
+/* ⭐ LE TITRE D'UNE PAGE — la règle, écrite pour qu'elle ne se fasse pas « corriger ».
+   (Décision de Joel, 2026-08-12, après avoir vu « Les logements » composée autrement que
+   les autres pages.)
+
+   • Une PAGE porte `.titre-page` → rôle « titre de page », 62px.
+     Les logements · La maison · Les alentours · Le naturisme · Tarifs · Nous écrire ·
+     Mentions légales · Confidentialité · Introuvable.
+   • Une FICHE DE LOGEMENT — La Chambre, Le Studio — garde `.section__titre`, 40px, ET
+     C'EST VOULU : ce sont des PAGES FILLES, on y arrive depuis « Les logements ». Un titre
+     plus discret dit cette hiérarchie sans un mot. Et « La Chambre » fait dix caractères :
+     à 62px, le vide autour ne raconterait rien, alors que la photo et le prix, eux, ont
+     quelque chose à dire. ⛔ Ce n'est PAS une incohérence à réparer.
+
+   Cette classe s'appelait `.maison__h1` jusqu'au 2026-08-12 — un nom né sur « La maison »
+   puis recopié sur sept pages, qui racontait d'où venait le code au lieu de dire ce qu'il
+   fait. Renommée le jour où la règle a été écrite. */
+.titre-page {
   font-family: var(--police-titre);
   font-weight: 400;
   font-size: var(--texte-titre-page);
@@ -659,12 +679,22 @@ a:hover { color: var(--lien-survol); }
   margin: 0;
   max-width: 20ch;
   text-wrap: pretty;
-  /* L'allemand compose des mots que rien ne peut couper autrement :
-     « Datenschutzerklärung » débordait à lui seul de l'écran d'un visiteur qui zoome.
-     `lang` est posé sur <html>, donc la césure automatique tombe au bon endroit. */
+  /* Filet de sécurité : un mot plus large que sa colonne se coupe plutôt que de déborder
+     de l'écran. Il ne se déclenche que dans ce cas-là, jamais par confort. */
   overflow-wrap: break-word;
-  hyphens: auto;
+  /* ⛔ PAS DE CÉSURE AUTOMATIQUE — corrigé le 2026-08-12 (Joel : « tu ne sais rien faire
+     pour le piscine qui va à la ligne ? »). Elle était posée pour TOUTES les langues, à
+     cause d'un seul mot allemand ; en français elle coupait « la pis-cine » en deux au
+     milieu d'un titre qui avait toute la place d'aller à la ligne entier.
+     Une règle installée pour un cas particulier ne doit pas s'appliquer au cas général. */
+  hyphens: manual;
 }
+
+/* L'allemand, LUI, en a besoin : « Datenschutzerklärung » fait 20 caractères d'un seul
+   tenant — mesuré, c'est le seul mot du site dans ce cas (le plus long ailleurs : 15 en
+   français, 14 en anglais et en néerlandais). `lang` est posé sur <html>, donc la coupure
+   tombe aux bons endroits de la langue. */
+html[lang="de"] .titre-page { hyphens: auto; }
 .maison__ouverture {
   display: flex;
   flex-direction: column;
@@ -1254,7 +1284,12 @@ a:hover { color: var(--lien-survol); }
 /* ── Bloc carte, repères de la page « Nous écrire », supplément de ménage ────────────
    Ajoutés le 2026-08-11 après les trois passes internes (carte : décision du 2026-08-08
    jamais exécutée ; les deux autres : passe UX). */
-.carte { max-width: 1400px; margin: 0 auto; }
+/* ⛔ Le `max-width: 1400px` qui vivait ici a été retiré le 2026-08-12, en même temps que
+   l'exception des logements : il ne servait à rien. Mesuré avant de le toucher — le bloc
+   vit dans une `.section` de 1240px, il disposait donc de 1112px et n'a jamais approché
+   ses 1400. Un chiffre inerte qui contredit la constante du site ne fait qu'égarer la
+   prochaine lecture. */
+.carte { margin: 0 auto; }
 .carte__lien { display: block; text-decoration: none; }
 .carte__image { width: 100%; height: auto; display: block; border: 1px solid var(--bordure); }
 .carte__itineraire { margin: 12px 0 0; font-size: var(--texte-corps); line-height: 1.6; }
