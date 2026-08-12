@@ -161,8 +161,13 @@ a:hover { color: var(--lien-survol); }
    raison sur son écran, et la mesure dit où ça s'arrête : l'espace libre vaut 390px en
    français sur 13 pouces, mais 153px en allemand sur le plus petit écran d'ordinateur —
    et logo + nom en réclament 144. Le nom y frôlerait « Preise » d'un côté et « fr » de
-   l'autre. Au-dessus de 1200px, l'allemand garde plus de 120px de respiration : c'est là
-   qu'on ouvre. En dessous, le symbole seul — il reste parfaitement lisible.
+   l'autre. En dessous du seuil, le symbole seul — il reste parfaitement lisible.
+   📐 LE SEUIL EST À 1140px, ET IL A ÉTÉ CORRIGÉ (2026-08-12, second tour). Je l'avais posé
+   à 1200 « par sécurité », sans mesurer entre les deux. Joel : « sur mon iPad il y a juste
+   le logo, c'est fait exprès ? » — un iPad en paysage fait 1180 ou 1194px et ratait le
+   seuil de 6 à 20 pixels. Mesuré ensuite à ces largeurs : à 1180 l'allemand garde 52px de
+   marge de chaque côté, à 1140 il en garde 37. Aucune raison de priver du nom la moitié
+   des tablettes du monde. ⛔ Ne pas descendre sous 1140 : c'est là que ça se resserre. */
    ⛔ La signature « CARVOEIRO · ALGARVE » ne revient PAS : c'est une phrase de première
    rencontre, la répéter à chaque défilement en ferait du bruit (décision de Joel). */
 .marque-mini__nom {
@@ -174,7 +179,7 @@ a:hover { color: var(--lien-survol); }
   line-height: 1;
   white-space: nowrap;
 }
-@media (min-width: 1200px) {
+@media (min-width: 1140px) {
   .en-tete--compacte .marque-mini__nom { display: inline; }
 }
 
